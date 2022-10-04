@@ -37,7 +37,7 @@ class Search extends Component {
           data-testid="search-artist-button"
           // onClick={ this.savingUser }
         >
-          Entrar
+          Pesquisar
         </button>
       </div>
     );
