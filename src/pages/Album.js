@@ -67,3 +67,5 @@ Album.propTypes = {
 }.isRequired;
 
 export default Album;
+
+// Requisito feito com a ajuda de Sérgio Moreira
