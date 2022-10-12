@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import searchAlbumsAPI from '../services/searchAlbumsAPI';
-import Loading from '../services/Loading';
 
 class Search extends React.Component {
   constructor() {
@@ -107,7 +106,7 @@ class Search extends React.Component {
 
         <div>
           {
-            isLoading ? <Loading />
+            isLoading ? <isLoading />
               : this.getAlbumCard()
           }
         </div>
@@ -118,9 +117,9 @@ class Search extends React.Component {
           }
         </div>
 
-        <div data-testid="page-search">
-          Pesquisar
-        </div>
+        {/* <div data-testid="page-search"> */}
+        {/* Pesquisar */}
+        {/* </div> */}
 
         <form>
           <input
