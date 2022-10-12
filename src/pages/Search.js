@@ -1,5 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
+import Loading from '../services/Loading';
 
 class Search extends React.Component {
   constructor() {
@@ -7,8 +10,75 @@ class Search extends React.Component {
     this.state = {
       searchArtist: '',
       isDisabled: true,
+      findAlbums: [],
+      findArtistAlbum: true,
+      isLoading: false,
     };
   }
+
+  componentDidMount() {
+    this.findArtistButton();
+  }
+
+  findArtistButton = async () => {
+    const { searchArtist } = this.state;
+    const getAlbums = await searchAlbumsAPI(searchArtist); // O estado atual de searchArtist é armazenada na const getAlbums.
+    this.setState({
+      findAlbums: getAlbums, // O retorno da API é armazenado em findAlbums
+      findArtist: searchArtist, // Como o requisito pede para apagar o input, é necessário que o artista pesquisado seja armazenada em algum lugar.
+      searchArtist: '', // Input apagado, após ter sido armazenado.
+      isLoading: false, // isLoading é falso pq ja retornou a API
+    }, this.validateInput());
+  };
+
+  validateInput = () => {
+    const { findAlbums } = this.state;
+    if (findAlbums.length === 0) { // Checa a existência ou não do album.
+      this.setState({ findArtistAlbum: false });
+    } else {
+      this.setState({ findArtistAlbum: true });
+    }
+  };
+
+  getAlbumCard = () => {
+    const {
+      findAlbums,
+      findArtist,
+    } = this.state;
+
+    const albumCard = (
+      <div>
+        <p>
+          Resultado de álbuns de:
+          {' '}
+          {findArtist}
+        </p>
+        {
+          findAlbums.map((albumInfo, key) => (
+            <div key={ key }>
+              <img
+                src={ albumInfo.artworkUrl100 }
+                alt={ albumInfo.collectionName }
+              />
+              <ul>
+                {/* <li>{albumInfo.artistId}</li> */}
+                <li>{albumInfo.artistName}</li>
+                {/* <li>{albumInfo.collectionId}</li> */}
+                <li>{albumInfo.collectionName}</li>
+                {/* <li>{albumInfo.releaseDate}</li> */}
+                <li>{albumInfo.trackCount}</li>
+                <Link
+                  to={ `/album/${albumInfo.collectionId}` }
+                  data-testid={ `link-to-album-${albumInfo.collectionId}` }
+                />
+              </ul>
+
+            </div>
+          ))
+        }
+      </div>);
+    return albumCard;
+  };
 
   onChange = ({ target }) => {
     const { name, value } = target;
@@ -28,12 +98,30 @@ class Search extends React.Component {
   };
 
   render() {
-    const { searchArtist, isDisabled } = this.state;
+    const { searchArtist, isDisabled, isLoading, findArtistAlbum } = this.state;
 
     return (
       <div data-testid="page-search">
         <p>Search</p>
         <Header />
+
+        <div>
+          {
+            isLoading ? <Loading />
+              : this.getAlbumCard()
+          }
+        </div>
+
+        <div>
+          {
+            !findArtistAlbum && <p>Nenhum álbum foi encontrado</p>
+          }
+        </div>
+
+        <div data-testid="page-search">
+          Pesquisar
+        </div>
+
         <form>
           <input
             id="searchArtist"
@@ -48,8 +136,8 @@ class Search extends React.Component {
             type="button"
             disabled={ isDisabled }
             data-testid="search-artist-button"
-          //
-          // onClick={ this.requestApi }
+            //
+            onClick={ this.findArtistButton }
           >
             Pesquisar
           </button>
@@ -60,3 +148,6 @@ class Search extends React.Component {
 }
 
 export default Search;
+
+// Gratidão aos amigos Sérgio Moreira, João Kraemer e Aimê Martins. Sem vcs eu não teria conseguido.
+//
