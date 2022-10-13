@@ -31,32 +31,32 @@ class Album extends Component {
       <div data-testid="page-album">
         <p>Album</p>
         <Header />
-        <div>
+        <section>
           {
-            musicList.map((music, index) => (
-              index === 0 ? ( // Se o index for 0 retorna informações do álbum e artista
-
-                <div key={ index }>
-                  <img
-                    src={ music.artworkUrl100 }
-                    alt={ music.collectionName }
-                  />
-                  <p data-testid="artist-name">{music.artistName}</p>
-                  <p data-testid="album-name">{music.collectionName}</p>
-                </div>
-
-              )
-                : ( // se o index não for 0 retorna a lista de músicas que foi criada em MusicCard
-                  <div key={ music.trackId }>
-                    <MusicCard
-                      trackName={ music.trackName }
-                      previewUrl={ music.previewUrl }
-                    />
-                  </div>
-                )
+            musicList.filter((element, index) => index === 0).map((music, index) => (
+              <div key={ index }>
+                <p data-testid="artist-name">{music.artistName}</p>
+                <img
+                  src={ music.artworkUrl100 }
+                  alt={ music.collectionName }
+                />
+                <p data-testid="album-name">{music.collectionName}</p>
+              </div>
             ))
           }
-        </div>
+          <span>
+            {
+              musicList.filter((element, index) => index !== 0).map((music, index) => (
+                <MusicCard
+                  key={ index.trackId }
+                  trackName={ music.trackName }
+                  previewUrl={ music.previewUrl }
+                  trackId={ music.trackId }
+                />
+              ))
+            }
+          </span>
+        </section>
       </div>
     );
   }
@@ -68,4 +68,5 @@ Album.propTypes = {
 
 export default Album;
 
-// Requisito feito com a ajuda de Sérgio Moreira
+// Requisito 7 feito com a ajuda de Sérgio Moreira
+// Nunca que eu teria feito esse requisito 8 sem a ajuda de Sérgio!
