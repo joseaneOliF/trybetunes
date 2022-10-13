@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 import Loading from '../services/Loading';
 
 class MusicCard extends React.Component {
@@ -11,6 +11,14 @@ class MusicCard extends React.Component {
       saveFavorites: [], // array que armazena as músicas favoritas
       isCheckedFavorites: false, // armazena o estado do checkbox
     };
+  }
+
+  async componentDidMount() { /// 9
+    const { musics } = this.props; //  prop validations para os itens de objeto acessados
+    const favoriteList = await getFavoriteSongs();
+    const someFavoriteList = favoriteList
+      .some((music) => music.trackId === musics.trackId);
+    if (someFavoriteList) this.setState({ isCheckedFavorites: someFavoriteList });
   }
 
   saveFavoritesSongs = async (event) => {
@@ -50,6 +58,7 @@ class MusicCard extends React.Component {
                 Favorita
                 <input
                   id="favoriteSongs"
+                  name={ trackId }
                   type="checkbox"
                   data-testid={ `checkbox-music-${trackId}` }
                   checked={ isCheckedFavorites }
@@ -75,9 +84,17 @@ class MusicCard extends React.Component {
 }
 
 MusicCard.propTypes = {
+  musics: PropTypes.shape({ artistId: PropTypes.number, trackId: PropTypes.number }),
   trackName: PropTypes.string,
   previewUrl: PropTypes.string,
-  trackId: PropTypes.string,
+  trackId: PropTypes.number,
 }.isRequired;
+
+MusicCard.defaultProps = {
+  musics: PropTypes.shape({ artistId: 0 }),
+  trackName: '',
+  previewUrl: '',
+  trackId: 0,
+};
 
 export default MusicCard;
